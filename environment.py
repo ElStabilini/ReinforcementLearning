@@ -236,6 +236,7 @@ class VFAFarmEnv(gym.Env):
         self.budget = initial_budget
         self.current_year = self.initial_year
         self.done = False
+        self.wheat_grown = 0
 
         # Define action and observation space
         self.action_space = spaces.Discrete(2)  # 0: Buy sheep, 1: Grow wheat
@@ -250,7 +251,6 @@ class VFAFarmEnv(gym.Env):
         norm_sheep = self.sheep_count / self.max_sheep
         norm_year = self.current_year / self.max_year
         return np.array([norm_budget, norm_sheep, norm_year], dtype=np.float32)
-
     
         
 
@@ -260,6 +260,7 @@ class VFAFarmEnv(gym.Env):
         self.sheep_count = self.initial_sheep
         self.current_year = self.initial_year
         self.done = False
+        self.wheat_grown = 0
         return self._get_normalized_state()
     
     def _move(self, action):
@@ -270,11 +271,12 @@ class VFAFarmEnv(gym.Env):
         elif action == 1:  # Grow wheat
             if self.budget >= self.wheat_cost:
                 self.budget -= self.wheat_cost
+                self.wheat_grown += 1
 
         storm = np.random.random() < self.prob_storm
 
         wool_profit = self.sheep_count * 10
-        wheat_profit = 0 if storm else 50
+        wheat_profit = 0 if storm else self.wheat_grown * 50
         self.budget += wool_profit + wheat_profit
         
         # Check for sheep reproduction
@@ -284,16 +286,26 @@ class VFAFarmEnv(gym.Env):
 
         reward = self.budget - self.initial_budget
 
-        return reward
+        return reward, storm
     
     def step(self, action):
         assert self.action_space.contains(action)
         
         self.current_year += 1
-        reward = self._move(action)
+        reward, storm = self._move(action)
 
         if self.budget <= 0 or self.current_year >= self.max_year:
             self.done = True
+
+        info = {
+            "year": self.current_year,
+            "budget": self.budget,
+            "sheep_count": self.sheep_count,
+            "wheat_grown": self.wheat_grown,
+            "storm_occurred": storm 
+        }
+
+        return self._get_normalized_state(), reward, self.done, info
 
         return self._get_normalized_state(), reward, self.done, {}
 
@@ -302,6 +314,9 @@ class VFAFarmEnv(gym.Env):
 
 
 register(
-    id="VFAFarm-v0",
+    id="VFAFarm-v0.1",
     entry_point=lambda: VFAFarmEnv(),
 )
+
+#v0.1 differ from v0 only for the fact that during the training can access all the variables of the 
+# environment and so is able to plot all the variable and I also have a new variable for the wheat eventually grown
