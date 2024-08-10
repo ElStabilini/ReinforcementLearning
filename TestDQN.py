@@ -27,7 +27,7 @@ env = gym.make('VFAFarm-v0.0.1')
 agent = DQNAgent(env)
 
 agent = DQNAgent(env)
-num_episodes = 100
+num_episodes = 1000
 batch_size = 32
 
 # Lists to store rewards and episode lengths
@@ -45,7 +45,8 @@ for episode in range(num_episodes):
     while not done:
         action = agent.act(state)
         next_state, reward, done, info = env.step(action)
-        agent.train(state, action, reward, next_state, done)
+        agent.remember(state, action, reward, next_state, done, info)
+        agent.replay()
         state = next_state
         total_reward += reward
         steps += 1

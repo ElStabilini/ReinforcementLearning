@@ -100,7 +100,7 @@ class DQNAgent:
         minibatch = random.sample(self.memory, self.batch_size)
         states, targets = [], []
 
-        for state, action, reward, next_state, done in minibatch:
+        for state, action, reward, next_state, done, info in minibatch:
             target = self.model.predict(state[np.newaxis, ...])[0]
             if done:
                 target[action] = reward
@@ -119,7 +119,7 @@ class DQNAgent:
     def save(self, path, filename):
         if not os.path.exists(path):
             os.makedirs(path)
-        full_path = os.path.join(path, filename)
+        full_path = os.path.join(path, filename + '.keras')  # Add .keras extension
         try:
             self.model.save(full_path)
             print(f"Model saved successfully to {full_path}")
