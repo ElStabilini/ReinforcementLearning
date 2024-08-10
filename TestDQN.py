@@ -14,7 +14,7 @@ import pickle
 from pathlib import Path
 from tqdm import tqdm
 
-from environment import VFAFarmEnv
+from environment_v00 import VFAFarmEnv
 from algorithms import DQNAgent
 
 #define path to saving directory
