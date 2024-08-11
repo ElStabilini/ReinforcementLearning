@@ -133,16 +133,23 @@ class DQNAgent:
                 print(f"Error saving model in SavedModel format: {str(e)}")
 
     def load(self, path, filename):
-        full_path = os.path.join(path, filename)
+        full_path = os.path.join(path, filename + '.keras')  # Add .keras extension
+        if not os.path.exists(full_path):
+            full_path = os.path.join(path, filename)  # Try without extension for SavedModel format
+            if not os.path.exists(full_path):
+                print(f"No model file found at {full_path}")
+                return
+    
         try:
             self.model = keras.models.load_model(full_path)
             print(f"Model loaded successfully from {full_path}")
-        except OSError:
+        except Exception as e:
+            print(f"Error loading Keras model: {str(e)}")
             try:
                 self.model = tf.saved_model.load(full_path)
                 print(f"Model loaded from SavedModel format at {full_path}")
             except Exception as e:
                 print(f"Error loading model: {str(e)}")
                 return
-
-        self.update_target_model()       
+    
+        self.update_target_model()     
