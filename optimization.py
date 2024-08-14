@@ -19,6 +19,7 @@ from tensorflow.keras import layers
 
 from environment_v00 import VFAFarmEnv
 from algorithms import DQNAgent
+from training import train_agent, save_results
 
 #test code must be changed before actually using it
 
@@ -39,19 +40,22 @@ def objective(trial):
     model = create_model(trial)
     
     # Suggest values for other hyperparameters
-    learning_rate = trial.suggest_loguniform('learning_rate', 1e-5, 1e-1)
+    learning_rate = trial.suggest_float('learning_rate', 1e-5, 1e-1, log=True)
     batch_size = trial.suggest_int('batch_size', 16, 256)
-    gamma = trial.suggest_uniform('gamma', 0.9, 0.9999)
-    epsilon_decay = trial.suggest_uniform('epsilon_decay', 0.99, 0.9999)
+    gamma = trial.suggest_float('gamma', 0.9, 0.9999)
+    epsilon_decay = trial.suggest_float('epsilon_decay', 0.99, 0.9999)
     
     # Create the agent with the suggested hyperparameters
     agent = DQNAgent(env, model=model, learning_rate=learning_rate, 
                      gamma=gamma, epsilon_decay=epsilon_decay, batch_size=batch_size)
     
     # Train the agent
-    total_reward = train_agent(agent, n_episodes=1000)  # You need to implement this function
+    mean_reward, rewards, episode_lengths, episode_info = train_agent(agent, env, num_episodes=500)
     
-    return total_reward  # The objective to maximize
+    # Save results
+    #save_results(agent, rewards, episode_lengths, episode_info)
+    
+    return mean_reward  # The objective to maximize
 
 # Run the optimization
 study = optuna.create_study(direction='maximize')
