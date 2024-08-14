@@ -32,7 +32,7 @@ import numpy as np
 '''
 
 class DQNAgent:
-    def __init__(self, env, learning_rate=0.001, gamma=0.99, epsilon=1.0, epsilon_decay=0.995, epsilon_min=0.01, batch_size=32, memory_size=10000):
+    def __init__(self, env, model=None, learning_rate=0.001, gamma=0.99, epsilon=1.0, epsilon_decay=0.995, epsilon_min=0.01, batch_size=32, memory_size=10000):
         self.env = env
         self.learning_rate = learning_rate
         self.gamma = gamma
@@ -47,10 +47,13 @@ class DQNAgent:
         self.action_dim = env.action_space.n
 
         # Initialize Q-network
-        self.model = self.build_model()
+        if model is None:
+            self.model = self.build_model()
+        else:
+            self.model = model
 
         # Initialize target network
-        self.target_model = self.build_model()
+        self.target_model = keras.models.clone_model(self.model)
         self.update_target_model()
 
     def build_model(self):
