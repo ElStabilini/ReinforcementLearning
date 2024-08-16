@@ -53,7 +53,8 @@ def objective(trial):
     mean_reward, rewards, episode_lengths, episode_info = train_agent(agent, env, num_episodes=500)
     
     # Save results
-    #save_results(agent, rewards, episode_lengths, episode_info)
+    path = Path('/Desktop/Uni/SecondY/RL/SecondPart/SummerClaude/Optimization/')
+    save_results(agent, path, rewards, episode_lengths, episode_info)
     
     return mean_reward  # The objective to maximize
 
@@ -68,5 +69,3 @@ print('Params: ')
 for key, value in trial.params.items():
     print('    {}: {}'.format(key, value))
 
-
-Creating this message that will be a compilation error to remind to create a new folder for sving results for each training I am performing during optimization NB: must be changed in the training.py file

@@ -44,14 +44,13 @@ def train_agent(agent, env, num_episodes=1000, batch_size=32, update_target_ever
 
     return np.mean(rewards), np.array(rewards), np.array(episode_lengths), episode_info
 
-##Change folder for saving: /home/elisa/Desktop/Uni/SecondY/RL/SecondPart/SummerClaude/Optimization
-def save_results(agent, rewards, episode_lengths, episode_info):
+def save_results(agent, path, rewards, episode_lengths, episode_info):
     now = datetime.datetime.now()
     formatted_time = now.strftime("%Y%m%d_%H%M%S")
     
     # Define paths
-    TrainedDQLearning_model = Path('/home/elisa/Desktop/Uni/SecondY/RL/SecondPart/SummerClaude/TrainedDQLearning/Model')
-    TrainedDQLearning_data = Path('/home/elisa/Desktop/Uni/SecondY/RL/SecondPart/SummerClaude/TrainedDQLearning/Data')
+    TrainedDQLearning_model = path/'Model'
+    TrainedDQLearning_data = path/'Data'
     
     # Save model
     agent.save(TrainedDQLearning_model, f"DQN_final_{formatted_time}")
