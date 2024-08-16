@@ -2,6 +2,7 @@ import numpy as np
 from tqdm import tqdm
 import datetime
 import os
+import csv
 import pickle
 from pathlib import Path
 
@@ -62,3 +63,17 @@ def save_results(agent, path, rewards, episode_lengths, episode_info):
     # Save episode info
     with open(os.path.join(TrainedDQLearning_data, f"episode_info_{formatted_time}.pkl"), 'wb') as f:
         pickle.dump(episode_info, f)
+
+    return formatted_time
+
+def save_hyperparameters(path, hyperparameters):
+    file_path = path / 'hyperparameters.csv'
+    file_exists = file_path.exists()
+
+    with open(file_path, 'a', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=['learning_rate', 'gamma', 'epsilon_decay', 'batch_size', 'filename'])
+        
+        if not file_exists:
+            writer.writeheader()
+        
+        writer.writerow(hyperparameters)
