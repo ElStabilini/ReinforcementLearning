@@ -67,3 +67,6 @@ print('Value: ', trial.value)
 print('Params: ')
 for key, value in trial.params.items():
     print('    {}: {}'.format(key, value))
+
+
+Creating this message that will be a compilation error to remind to create a new folder for sving results for each training I am performing during optimization
