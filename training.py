@@ -44,7 +44,7 @@ def train_agent(agent, env, num_episodes=1000, batch_size=32, update_target_ever
 
     return np.mean(rewards), np.array(rewards), np.array(episode_lengths), episode_info
 
-##Change folder for saving
+##Change folder for saving: /home/elisa/Desktop/Uni/SecondY/RL/SecondPart/SummerClaude/Optimization
 def save_results(agent, rewards, episode_lengths, episode_info):
     now = datetime.datetime.now()
     formatted_time = now.strftime("%Y%m%d_%H%M%S")
