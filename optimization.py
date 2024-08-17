@@ -76,7 +76,7 @@ def objective(trial):
     # I am not saving the loss function and the update rule for the optimization in the NN because are always MSE and Adam for the moment
     # one of the possible studies on this model is what are the best function to use   
     
-    #save_hyperparameters(path, hyperparameters)
+    save_hyperparameters(path, hyperparameters)
     return mean_reward  # The objective to maximize
 
 
