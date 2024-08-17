@@ -57,10 +57,10 @@ def objective(trial):
                      gamma=gamma, epsilon_decay=epsilon_decay, batch_size=batch_size)
     
     # Train the agent
-    mean_reward, rewards, episode_lengths, episode_info = train_agent(agent, env, num_episodes=100)
+    mean_reward, rewards, episode_lengths, episode_info = train_agent(agent, env, num_episodes=10)
     
     # Save results
-    path = Path('/Desktop/Uni/SecondY/RL/SecondPart/SummerClaude/Optimization/')
+    path = Path('/home/elisa/Desktop/Uni/SecondY/RL/SecondPart/SummerClaude/Optimization/')
     formatted_time = save_results(agent, path, rewards, episode_lengths, episode_info)
     print(f"completed and saved training for the following combination of hyperparameters: "
           f"lr = {learning_rate}, gamma = {gamma}, eps_decay = {epsilon_decay}, "
