@@ -69,8 +69,8 @@ class DQNAgent:
         model.compile(optimizer=keras.optimizers.Adam(learning_rate=self.learning_rate), loss='mse')
         return model
     
-    def remember(self, state, action, reward, next_state, done, info):
-        self.memory.append((state, action, reward, next_state, done, info))
+    def remember(self, state, action, reward, next_state, done):
+        self.memory.append((state, action, reward, next_state, done))
 
     def update_target_model(self):
         self.target_model.set_weights(self.model.get_weights())

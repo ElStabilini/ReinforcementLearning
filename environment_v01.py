@@ -29,6 +29,10 @@ class VFAFarmEnv(gym.Env):
         self.done = False
         self.wheat_grown = 0
 
+        self.budget_history = []
+        self.sheep_history = []
+        self.wheat_history = []
+
         # Define action and observation space
         self.action_space = spaces.Discrete(2)  # 0: Buy sheep, 1: Grow wheat
         self.observation_space = spaces.Box(
@@ -99,17 +103,16 @@ class VFAFarmEnv(gym.Env):
 
         info = {
             "year": self.current_year,
-            "budget": self.budget,
-            "sheep_count": self.sheep_count,
-            "wheat_grown": self.wheat_grown,
             "storm_occurred": storm,
-            "raw_reward": raw_reward 
+            "raw_reward": raw_reward
         }
+
+        self.budget_history.append(self.budget)
+        self.sheep_history.append(self.sheep_count)
+        self.wheat_history.append(self.wheat_grown)
 
         return self._get_normalized_state(), scaled_reward, self.done, info
 
-    def render(self):
-        print(f"Year: {self.current_year}, Budget: {self.budget}€, Sheep Count: {self.sheep_count}")
 
 
 register(

@@ -62,6 +62,13 @@ def objective(trial):
     # Save results
     path = Path('/home/elisa/Desktop/Uni/SecondY/RL/SecondPart/SummerClaude/Optimization/')
     formatted_time = save_results(agent, path, rewards, episode_lengths, episode_info)
+    
+    np.savez(os.path.join(path, f"env_history_{formatted_time}.npz"),
+         budget_history=env.budget_history,
+         sheep_history=env.sheep_history,
+         wheat_history=env.wheat_history)
+    
+    
     print(f"completed and saved training for the following combination of hyperparameters: "
           f"lr = {learning_rate}, gamma = {gamma}, eps_decay = {epsilon_decay}, "
           f"batch = {batch_size}, filename = {formatted_time}")

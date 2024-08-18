@@ -45,6 +45,8 @@ def train_agent(agent, env, num_episodes=1000, batch_size=32, update_target_ever
 
     return np.mean(rewards), np.array(rewards), np.array(episode_lengths), episode_info
 
+
+
 def save_results(agent, path, rewards, episode_lengths, episode_info):
     now = datetime.datetime.now()
     formatted_time = now.strftime("%Y%m%d_%H%M%S")
@@ -64,7 +66,13 @@ def save_results(agent, path, rewards, episode_lengths, episode_info):
     with open(os.path.join(TrainedDQLearning_data, f"episode_info_{formatted_time}.pkl"), 'wb') as f:
         pickle.dump(episode_info, f)
 
+    # Save agent training errors
+    agent.save_training_error(TrainedDQLearning_data, f"training_errors_{formatted_time}")
+    
     return formatted_time
+
+
+
 
 def save_hyperparameters(path, hyperparameters):
     file_path = path / 'hyperparameters.csv'
