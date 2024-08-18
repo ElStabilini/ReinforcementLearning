@@ -41,8 +41,10 @@ class DQNAgent:
         self.epsilon_min = epsilon_min
         self.batch_size = batch_size
         self.memory = deque(maxlen=memory_size)
+
         self.training_error = []
-        self.current_episode_errors = []
+        self.episode_training_error = []
+        self.complete_training_error = []
 
         # Define the state and action dimensions
         self.state_dim = env.observation_space.shape[0]
@@ -114,11 +116,15 @@ class DQNAgent:
         # Calculate TD error
         td_error = target[action] - old_val
         self.training_error.append(td_error)
+        self.complete_training_error.append(td_error) 
 
         self.model.fit(state, np.array([target]), epochs=1, verbose=0)
 
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
+
+        self.episode_training_error.append(np.mean(self.training_error))
+        self.training_error = []  # Reset for the next training step
 
     #training with replay buffer - the commented one is the first version 
     # without the computation of the training error
@@ -173,6 +179,9 @@ class DQNAgent:
 
         # Store the average error for this batch
         self.training_error.append(np.mean(errors))
+        self.complete_training_error.append(np.mean(errors))
+        self.episode_training_error.append(np.mean(self.training_error))
+        self.training_error = []  # Reset for the next episode
 
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
@@ -196,7 +205,7 @@ class DQNAgent:
     def load(self, path, filename):
         full_path = os.path.join(path, filename + '.keras')  # Add .keras extension
         if not os.path.exists(full_path):
-            full_path = os.path.join(path, filename)  # Try without extension for SavedModel format
+            full_path = os.path.join(path, filename)  
             if not os.path.exists(full_path):
                 print(f"No model file found at {full_path}")
                 return
@@ -213,4 +222,13 @@ class DQNAgent:
                 print(f"Error loading model: {str(e)}")
                 return
     
-        self.update_target_model()     
+        self.update_target_model()    
+
+def save_training_error(self, path, filename):
+    if not os.path.exists(path):
+        os.makedirs(path)
+    
+    full_path = os.path.join(path, filename + '.npz')
+    
+    np.savez(full_path, avg_error=np.array(self.episode_training_error),
+             all_errors=np.array(self.all_training_errors))
