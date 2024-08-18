@@ -28,7 +28,7 @@ episode_info = []
 
 
 for episode in tqdm(range(num_episodes)):
-    state = env.reset()
+    state, _ = env.reset()
     done = False
     total_reward = 0
     steps = 0
@@ -36,9 +36,13 @@ for episode in tqdm(range(num_episodes)):
 
     while not done:
         action = agent.act(state)
-        next_state, reward, done, info = env.step(action)
-        agent.remember(state, action, reward, next_state, done)
-        agent.replay()
+        next_state, reward, terminated, truncated, info = env.step(action)
+        done = terminated or truncated
+        
+        #agent.remember(state, action, reward, next_state, done)
+        #agent.replay()
+        agent.train(state, action, reward, next_state, done)
+
         state = next_state
         total_reward += reward
         steps += 1

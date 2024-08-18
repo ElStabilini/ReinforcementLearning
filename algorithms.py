@@ -101,6 +101,7 @@ class DQNAgent:
             self.epsilon *= self.epsilon_decay'''
     
     def train(self, state, action, reward, next_state, done):
+
         state = np.array(state).reshape(1, -1)
         next_state = np.array(next_state).reshape(1, -1)
 
@@ -159,7 +160,7 @@ class DQNAgent:
         states, targets = [], []
         errors = []
 
-        for state, action, reward, next_state, done, info in minibatch:
+        for state, action, reward, next_state, done in minibatch:
             target = self.model.predict(state[np.newaxis, ...])[0]
             old_val = target[action]
             if done:
@@ -224,11 +225,11 @@ class DQNAgent:
     
         self.update_target_model()    
 
-def save_training_error(self, path, filename):
-    if not os.path.exists(path):
-        os.makedirs(path)
-    
-    full_path = os.path.join(path, filename + '.npz')
-    
-    np.savez(full_path, avg_error=np.array(self.episode_training_error),
-             all_errors=np.array(self.all_training_errors))
+    def save_training_error(self, path, filename):
+        if not os.path.exists(path):
+            os.makedirs(path)
+        
+        full_path = os.path.join(path, filename + '.npz')
+        
+        np.savez(full_path, avg_error=np.array(self.episode_training_error),
+                 all_errors=np.array(self.all_training_errors))

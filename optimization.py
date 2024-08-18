@@ -17,14 +17,13 @@ from tqdm import tqdm
 from tensorflow import keras
 from tensorflow.keras import layers
 
-from environment_v00 import VFAFarmEnv
+from environment_v01 import VFAFarmEnv
 from algorithms import DQNAgent
 from training import train_agent, save_results, save_hyperparameters
 
 #test code must be changed before actually using it
 
 env = gym.make('VFAFarm-v0.0.1')
-
 
 def create_model(trial, learning_rate):
     n_layers = trial.suggest_int('n_layers', 1, 5)
@@ -61,6 +60,7 @@ def objective(trial):
     
     # Save results
     path = Path('/home/elisa/Desktop/Uni/SecondY/RL/SecondPart/SummerClaude/Optimization/')
+    path.mkdir(parents=True, exist_ok=True)    
     formatted_time = save_results(agent, path, rewards, episode_lengths, episode_info)
     
     np.savez(os.path.join(path, f"env_history_{formatted_time}.npz"),

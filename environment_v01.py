@@ -91,27 +91,29 @@ class VFAFarmEnv(gym.Env):
         
         self.current_year += 1
         raw_reward, storm = self._move(action)
-
+    
+        terminated = False
+        truncated = False
+    
         if self.budget < 0:
-            self.done = True
+            terminated = True
             raw_reward = -1000
-
         elif self.current_year >= self.max_year:
-            self.done = True
-
+            truncated = True
+    
         scaled_reward = self.scale_reward(raw_reward) 
-
+    
         info = {
             "year": self.current_year,
             "storm_occurred": storm,
             "raw_reward": raw_reward
         }
-
+    
         self.budget_history.append(self.budget)
         self.sheep_history.append(self.sheep_count)
         self.wheat_history.append(self.wheat_grown)
-
-        return self._get_normalized_state(), scaled_reward, self.done, info
+    
+        return self._get_normalized_state(), scaled_reward, terminated, truncated, info
 
 
 

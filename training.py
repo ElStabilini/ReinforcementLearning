@@ -12,7 +12,7 @@ def train_agent(agent, env, num_episodes=1000, batch_size=32, update_target_ever
     episode_info = []
 
     for episode in tqdm(range(num_episodes), desc="Training"):
-        state = env.reset()
+        state, _ = env.reset()
         done = False
         total_reward = 0
         steps = 0
@@ -20,9 +20,13 @@ def train_agent(agent, env, num_episodes=1000, batch_size=32, update_target_ever
 
         while not done:
             action = agent.act(state)
-            next_state, reward, done, info = env.step(action)
-            agent.remember(state, action, reward, next_state, done, info)
-            agent.replay()
+            next_state, reward, terminated, truncated, info = env.step(action)
+            done = terminated or truncated
+            
+            #agent.remember(state, action, reward, next_state, done)
+            #agent.replay()
+            agent.train(state, action, reward, next_state, done)
+            
             state = next_state
             total_reward += reward
             steps += 1
@@ -54,6 +58,9 @@ def save_results(agent, path, rewards, episode_lengths, episode_info):
     # Define paths
     TrainedDQLearning_model = path/'Model'
     TrainedDQLearning_data = path/'Data'
+
+    TrainedDQLearning_model.mkdir(parents=True, exist_ok=True)
+    TrainedDQLearning_data.mkdir(parents=True, exist_ok=True)
     
     # Save model
     agent.save(TrainedDQLearning_model, f"DQN_final_{formatted_time}")
