@@ -232,4 +232,4 @@ class DQNAgent:
         full_path = os.path.join(path, filename + '.npz')
         
         np.savez(full_path, avg_error=np.array(self.episode_training_error),
-                 all_errors=np.array(self.all_training_errors))
+                 all_errors=np.array(self.complete_training_error))

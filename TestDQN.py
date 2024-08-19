@@ -90,9 +90,9 @@ with open(os.path.join(TrainedDQLearning_data, f"episode_info_{formatted_time}.p
 
 #Save training history
 np.savez(os.path.join(TrainedDQLearning_data, f"env_history_{formatted_time}.npz"),
-         budget_history=env.budget_history,
-         sheep_history=env.sheep_history,
-         wheat_history=env.wheat_history)
+         budget_history=env.unwrapped.budget_history,
+         sheep_history=env.unwrapped.sheep_history,
+         wheat_history=env.unwrapped.wheat_history)
 
 # Save agent training errors
 agent.save_training_error(TrainedDQLearning_data, f"training_errors_{formatted_time}")

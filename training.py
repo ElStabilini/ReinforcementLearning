@@ -6,7 +6,7 @@ import csv
 import pickle
 from pathlib import Path
 
-def train_agent(agent, env, num_episodes=1000, batch_size=32, update_target_every=10):
+def train_agent(agent, env, num_episodes=2, batch_size=32, update_target_every=10):
     rewards = []
     episode_lengths = []
     episode_info = []
