@@ -18,7 +18,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 
 from environment_v01 import VFAFarmEnv
-from algorithms import DQNAgent
+from DQN_agent import DQNAgent
 from training import train_agent, save_results, save_hyperparameters
 
 #test code must be changed before actually using it

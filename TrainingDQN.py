@@ -7,7 +7,7 @@ import pickle
 from tqdm import tqdm
 
 from environment_v01 import VFAFarmEnv
-from algorithms import DQNAgent
+from DQN_agent import DQNAgent
 
 # Define paths to saving directories
 TrainedDQLearning_model = Path('/home/elisa/Desktop/Uni/SecondY/RL/SecondPart/SummerClaude/TrainedDQLearning/Model')
