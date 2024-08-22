@@ -16,6 +16,10 @@ class REINFORCEAgent:
         self.model = self.build_model()
         self.optimizer = keras.optimizers.Adam(learning_rate=self.learning_rate)
 
+        self.training_error = []
+        self.episode_training_error = []
+        self.complete_training_error = []
+
     def build_model(self):
         model = keras.Sequential([
             keras.layers.Dense(64, activation='relu', input_shape=(self.state_dim,)),
@@ -46,6 +50,12 @@ class REINFORCEAgent:
 
         grads = tape.gradient(loss, self.model.trainable_variables)
         self.optimizer.apply_gradients(zip(grads, self.model.trainable_variables))
+
+        error = loss.numpy()
+        self.training_error.append(error)
+        self.complete_training_error.append(error)
+        self.episode_training_error.append(np.mean(self.training_error))
+        self.training_error = []  # Reset for the next episode
 
     def discount_rewards(self, rewards):
         discounted_rewards = np.zeros_like(rewards)
@@ -94,8 +104,8 @@ class REINFORCEAgent:
     def save_training_error(self, path, filename):
         if not os.path.exists(path):
             os.makedirs(path)
-        
+
         full_path = os.path.join(path, filename + '.npz')
-        
+
         np.savez(full_path, avg_error=np.array(self.episode_training_error),
                  all_errors=np.array(self.complete_training_error))
