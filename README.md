@@ -12,8 +12,8 @@ You are the manager of a farm. You have an initial budget of 2000 €. Each year
 1. Buy one sheep: a sheep costs 1000 €
 2. Growing wheat: when you choose this action, you spend 20 €
 
-At the end of the year, you harvest the wheat and you sell your wool. Each sheep produces 1 wool unit that is sold for 10 €. Selling the harvested wheat instead gives you 50 €.
-However, during the year, there is a probability that your fields are devastated by a storm. In this case, your harvest will give you 0 €.
+At the end of the year, you harvest the wheat and you sell your wool. Each sheep produces 1 wool unit that is sold for 10 €. Moreover the number of sheeps evolve following abinomial distribution given by $$N_t = N_0 (1.15)^t $$.
+Selling the harvested wheat instead gives you 50 €. However, during the year, there is a probability $\alpha = 30%$ that your fields are devastated by a storm. In this case, your harvest will give you 0 €.
 
 Your manager career ends if you run out of money or, in any case, after 30 years, when you will retire.
 
