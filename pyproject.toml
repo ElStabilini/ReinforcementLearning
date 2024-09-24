@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "reinforcementlearning"
+version = "0.1.0"
+description = ""
+authors = ["Elisa Stabilini"]
+license = "n"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
