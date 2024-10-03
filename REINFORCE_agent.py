@@ -53,7 +53,7 @@ class REINFORCEAgent:
 
         error = loss.numpy()
         self.training_error.append(error)
-        self.complete_training_error.append(error)
+        #self.complete_training_error.append(error)
         self.episode_training_error.append(np.mean(self.training_error))
         self.training_error = []  # Reset for the next episode
 

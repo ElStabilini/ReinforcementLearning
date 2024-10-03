@@ -121,6 +121,3 @@ register(
     id="VFAFarm-v0.0.2",
     entry_point=lambda: VFAFarmEnv(),
 )
-
-#v0.1 differ from v0 only for the fact that during the training can access all the variables of the 
-# environment and so is able to plot all the variable and I also have a new variable for the wheat eventually grown
