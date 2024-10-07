@@ -52,10 +52,9 @@ class REINFORCEAgent:
         self.optimizer.apply_gradients(zip(grads, self.model.trainable_variables))
 
         error = loss.numpy()
-        self.training_error.append(error)
-        #self.complete_training_error.append(error)
-        self.episode_training_error.append(np.mean(self.training_error))
-        self.training_error = []  # Reset for the next episode
+        self.complete_training_error.append(error)
+        self.episode_training_error.append(error)
+
 
     def discount_rewards(self, rewards):
         discounted_rewards = np.zeros_like(rewards)
@@ -107,5 +106,6 @@ class REINFORCEAgent:
 
         full_path = os.path.join(path, filename + '.npz')
 
-        np.savez(full_path, avg_error=np.array(self.episode_training_error),
+        np.savez(full_path, 
+                 avg_error=np.array(self.episode_training_error),
                  all_errors=np.array(self.complete_training_error))

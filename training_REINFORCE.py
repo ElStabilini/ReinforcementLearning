@@ -59,7 +59,7 @@ for episode in tqdm(range(num_episodes)):
 
     # Train the agent after the episode is complete
     agent.train(states, actions, rewards_episode)
-    agent.complete_training_error.extend(agent.training_error)
+    #agent.complete_training_error.extend(agent.training_error)
 
     # Store the total reward and episode length
     rewards.append(total_reward)
