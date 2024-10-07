@@ -42,9 +42,9 @@ class DQNAgent:
         self.batch_size = batch_size
         self.memory = deque(maxlen=memory_size)
 
-        self.training_error = []
-        self.episode_training_error = []
-        self.complete_training_error = []
+        self.step_errors = []  # Store errors for each training step
+        self.episode_errors = []  # Store average error for each episode
+        self.current_episode_errors = []  # Temporary storage for current episode
 
         # Define the state and action dimensions
         self.state_dim = env.observation_space.shape[0]
@@ -100,32 +100,39 @@ class DQNAgent:
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay'''
     
-    def train(self, state, action, reward, next_state, done):
+    def replay(self):
+        if len(self.memory) < self.batch_size:
+            return
 
-        state = np.array(state).reshape(1, -1)
-        next_state = np.array(next_state).reshape(1, -1)
+        minibatch = random.sample(self.memory, self.batch_size)
+        states, targets = [], []
+        batch_errors = []
 
-        target = self.model.predict(state)[0]
-        old_val = target[action]  # Store the old Q-value
+        for state, action, reward, next_state, done in minibatch:
+            target = self.model.predict(state[np.newaxis, ...])[0]
+            old_val = target[action]
+            if done:
+                target[action] = reward
+            else:
+                t = self.target_model.predict(next_state[np.newaxis, ...])[0]
+                target[action] = reward + self.gamma * np.amax(t)
 
-        if done:
-            target[action] = reward
-        else:
-            t = self.target_model.predict(next_state)[0]
-            target[action] = reward + self.gamma * np.amax(t)
+            # Calculate TD error
+            td_error = target[action] - old_val
+            batch_errors.append(td_error)
 
-        # Calculate TD error
-        td_error = target[action] - old_val
-        self.training_error.append(td_error)
-        self.complete_training_error.append(td_error) 
+            states.append(state)
+            targets.append(target)
 
-        self.model.fit(state, np.array([target]), epochs=1, verbose=0)
+        self.model.fit(np.array(states), np.array(targets), epochs=1, verbose=0)
+
+        # Store the average error for this batch
+        avg_batch_error = np.mean(batch_errors)
+        self.step_errors.append(avg_batch_error)
+        self.current_episode_errors.append(avg_batch_error)
 
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
-
-        self.episode_training_error.append(np.mean(self.training_error))
-        self.training_error = []  # Reset for the next training step
 
     #training with replay buffer - the commented one is the first version 
     # without the computation of the training error
@@ -158,7 +165,7 @@ class DQNAgent:
 
         minibatch = random.sample(self.memory, self.batch_size)
         states, targets = [], []
-        errors = []
+        batch_errors = []
 
         for state, action, reward, next_state, done in minibatch:
             target = self.model.predict(state[np.newaxis, ...])[0]
@@ -171,18 +178,17 @@ class DQNAgent:
 
             # Calculate TD error
             td_error = target[action] - old_val
-            errors.append(td_error)
+            batch_errors.append(td_error)
 
             states.append(state)
             targets.append(target)
 
-        history = self.model.fit(np.array(states), np.array(targets), epochs=1, verbose=0)
+        self.model.fit(np.array(states), np.array(targets), epochs=1, verbose=0)
 
         # Store the average error for this batch
-        self.training_error.append(np.mean(errors))
-        self.complete_training_error.append(np.mean(errors))
-        self.episode_training_error.append(np.mean(self.training_error))
-        self.training_error = []  # Reset for the next episode
+        avg_batch_error = np.mean(batch_errors)
+        self.step_errors.append(avg_batch_error)
+        self.current_episode_errors.append(avg_batch_error)
 
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
@@ -231,5 +237,6 @@ class DQNAgent:
         
         full_path = os.path.join(path, filename + '.npz')
         
-        np.savez(full_path, avg_error=np.array(self.episode_training_error),
-                 all_errors=np.array(self.complete_training_error))
+        np.savez(full_path, 
+                 step_errors=np.array(self.step_errors),
+                 episode_errors=np.array(self.episode_errors))
