@@ -3,4 +3,4 @@
 # SBATCH directives (optional)
 #SBATCH --job-name=REINFORCE  # Job name
 
-python3 training_REINFORCE.py
+python3 trainingDQN.py
