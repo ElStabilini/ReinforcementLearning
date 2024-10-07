@@ -10,9 +10,9 @@ from environment_v01 import VFAFarmEnv
 from REINFORCE_agent import REINFORCEAgent  # Assume this is where you've defined the REINFORCEAgent
 
 # Define paths to saving directories
-TrainedREINFORCE_model = Path('/home/elisa/Desktop/Uni/SecondY/RL/SecondPart/SummerClaude/TrainedREINFORCE/Model')
-TrainedREINFORCE_data = Path('/home/elisa/Desktop/Uni/SecondY/RL/SecondPart/SummerClaude/TrainedREINFORCE/Data')
-TrainedREINFORCE_plots = Path('/home/elisa/Desktop/Uni/SecondY/RL/SecondPart/SummerClaude/TrainedREINFORCE/Plots')
+TrainedREINFORCE_model = Path('../TrainedREINFORCE/Model')
+TrainedREINFORCE_data = Path('../TrainedREINFORCE/Data')
+TrainedREINFORCE_plots = Path('../TrainedREINFORCE/Plots')
 
 # Initialize agent and environment
 env = gym.make('VFAFarm-v0.0.1')

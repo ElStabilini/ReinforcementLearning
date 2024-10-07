@@ -79,8 +79,6 @@ def save_results(agent, path, rewards, episode_lengths, episode_info):
     return formatted_time
 
 
-
-
 def save_hyperparameters(path, hyperparameters):
     file_path = path / 'hyperparameters.csv'
     file_exists = file_path.exists()

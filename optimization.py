@@ -59,7 +59,7 @@ def objective(trial):
     mean_reward, rewards, episode_lengths, episode_info = train_agent(agent, env, num_episodes=10)
     
     # Save results
-    path = Path('/home/elisa/Desktop/Uni/SecondY/RL/SecondPart/SummerClaude/Optimization/')
+    path = Path('../Optimization/')
     path.mkdir(parents=True, exist_ok=True)    
     formatted_time = save_results(agent, path, rewards, episode_lengths, episode_info)
     
