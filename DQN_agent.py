@@ -23,14 +23,6 @@ from sklearn.preprocessing import PolynomialFeatures
 from tensorflow import keras
 from tensorflow.keras import layers
 
-import numpy as np
-
-'''
-    DEEP QLEARNING AGENT
-
-    add description
-'''
-
 class DQNAgent:
     def __init__(self, env, model=None, learning_rate=0.001, gamma=0.99, epsilon=1.0, epsilon_decay=0.995, epsilon_min=0.01, batch_size=32, memory_size=10000):
         self.env = env
@@ -45,6 +37,7 @@ class DQNAgent:
         self.step_errors = []  # Store errors for each training step
         self.episode_errors = []  # Store average error for each episode
         self.current_episode_errors = []  # Temporary storage for current episode
+        self.episode_done = False  # Flag to track episode completion
 
         # Define the state and action dimensions
         self.state_dim = env.observation_space.shape[0]
@@ -81,25 +74,33 @@ class DQNAgent:
             return self.env.action_space.sample()
         q_values = self.model.predict(state)[0]
         return np.argmax(q_values)
-    
-    #training without replay buffer - the commented one is the first version 
-    # without the computation of the training error
-    '''def train(self, state, action, reward, next_state, done):
-        state = np.array(state).reshape(1, -1)  # Ensure state is a 2D numpy array
-        next_state = np.array(next_state).reshape(1, -1)  # Ensure next_state is a 2D numpy array
+
+    def train(self, state, action, reward, next_state, done):
+        state = np.array(state).reshape(1, -1)
+        next_state = np.array(next_state).reshape(1, -1)
 
         target = self.model.predict(state)[0]
+        old_val = target[action]
+
         if done:
             target[action] = reward
         else:
             t = self.target_model.predict(next_state)[0]
             target[action] = reward + self.gamma * np.amax(t)
-        
+
+        # Calculate TD error
+        td_error = target[action] - old_val
+        self.step_errors.append(td_error)
+        self.current_episode_errors.append(td_error)
+
         self.model.fit(state, np.array([target]), epochs=1, verbose=0)
 
         if self.epsilon > self.epsilon_min:
-            self.epsilon *= self.epsilon_decay'''
-    
+            self.epsilon *= self.epsilon_decay
+
+        if done:
+            self.finalize_episode()
+
     def replay(self):
         if len(self.memory) < self.batch_size:
             return
@@ -107,71 +108,15 @@ class DQNAgent:
         minibatch = random.sample(self.memory, self.batch_size)
         states, targets = [], []
         batch_errors = []
+        contains_episode_end = False
 
         for state, action, reward, next_state, done in minibatch:
             target = self.model.predict(state[np.newaxis, ...])[0]
             old_val = target[action]
-            if done:
-                target[action] = reward
-            else:
-                t = self.target_model.predict(next_state[np.newaxis, ...])[0]
-                target[action] = reward + self.gamma * np.amax(t)
-
-            # Calculate TD error
-            td_error = target[action] - old_val
-            batch_errors.append(td_error)
-
-            states.append(state)
-            targets.append(target)
-
-        self.model.fit(np.array(states), np.array(targets), epochs=1, verbose=0)
-
-        # Store the average error for this batch
-        avg_batch_error = np.mean(batch_errors)
-        self.step_errors.append(avg_batch_error)
-        self.current_episode_errors.append(avg_batch_error)
-
-        if self.epsilon > self.epsilon_min:
-            self.epsilon *= self.epsilon_decay
-
-    #training with replay buffer - the commented one is the first version 
-    # without the computation of the training error
-    '''def replay(self):
-        if len(self.memory) < self.batch_size:
-            return
-
-        minibatch = random.sample(self.memory, self.batch_size)
-        states, targets = [], []
-
-        for state, action, reward, next_state, done, info in minibatch:
-            target = self.model.predict(state[np.newaxis, ...])[0]
-            if done:
-                target[action] = reward
-            else:
-                t = self.target_model.predict(next_state[np.newaxis, ...])[0]
-                target[action] = reward + self.gamma * np.amax(t)
             
-            states.append(state)
-            targets.append(target)
-
-        self.model.fit(np.array(states), np.array(targets), epochs=1, verbose=0)
-
-        if self.epsilon > self.epsilon_min:
-            self.epsilon *= self.epsilon_decay'''
-    
-    def replay(self):
-        if len(self.memory) < self.batch_size:
-            return
-
-        minibatch = random.sample(self.memory, self.batch_size)
-        states, targets = [], []
-        batch_errors = []
-
-        for state, action, reward, next_state, done in minibatch:
-            target = self.model.predict(state[np.newaxis, ...])[0]
-            old_val = target[action]
             if done:
                 target[action] = reward
+                contains_episode_end = True
             else:
                 t = self.target_model.predict(next_state[np.newaxis, ...])[0]
                 target[action] = reward + self.gamma * np.amax(t)
@@ -190,8 +135,49 @@ class DQNAgent:
         self.step_errors.append(avg_batch_error)
         self.current_episode_errors.append(avg_batch_error)
 
+        # If the batch contains an episode end, finalize the episode
+        if contains_episode_end and not self.episode_done:
+            self.finalize_episode()
+            self.episode_done = True
+        elif not contains_episode_end:
+            self.episode_done = False
+
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
+
+    def finalize_episode(self):
+        """Helper method to handle episode completion"""
+        if len(self.current_episode_errors) > 0:
+            episode_avg_error = np.mean(self.current_episode_errors)
+            self.episode_errors.append(episode_avg_error)
+            self.current_episode_errors = []
+
+    def train_episode(self, max_steps=1000):
+        state = self.env.reset()[0]
+        total_reward = 0
+        done = False
+        truncated = False
+        step = 0
+        self.episode_done = False  # Reset episode done flag
+        
+        while not (done or truncated) and step < max_steps:
+            action = self.act(state)
+            next_state, reward, done, truncated, _ = self.env.step(action)
+            
+            # Store experience in memory
+            self.remember(state, action, reward, next_state, done)
+            
+            # Train without replay
+            self.train(state, action, reward, next_state, done)
+            
+            # Perform experience replay
+            self.replay()
+            
+            state = next_state
+            total_reward += reward
+            step += 1
+        
+        return total_reward
 
     def save(self, path, filename):
         if not os.path.exists(path):
