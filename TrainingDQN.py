@@ -10,9 +10,9 @@ from environment_v01 import VFAFarmEnv
 from DQN_agent import DQNAgent
 
 # Define paths to saving directories
-TrainedDQLearning_model = Path('../TrainedDQLearning/Model')
-TrainedDQLearning_data = Path('../TrainedDQLearning/Data')
-TrainedDQLearning_plots = Path('../TrainedDQLearning/Plots')
+TrainedDQLearning_model = Path('TrainedDQLearning/Model')
+TrainedDQLearning_data = Path('TrainedDQLearning/Data')
+TrainedDQLearning_plots = Path('TrainedDQLearning/Plots')
 
 # Initialize agent and environment
 env = gym.make('VFAFarm-v0.0.1')
