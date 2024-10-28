@@ -20,7 +20,7 @@ class VFAFarmEnv(gym.Env):
 
         self.max_year = 30
         self.max_sheep = 70
-        self.max_budget = 20000
+        self.max_budget = 200000
 
         # Initialize state
         self.sheep_count = self.initial_sheep

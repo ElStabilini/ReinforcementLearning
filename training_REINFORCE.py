@@ -18,7 +18,7 @@ TrainedREINFORCE_plots = Path('TrainedREINFORCE/Plots')
 env = gym.make('VFAFarm-v0.0.1')
 agent = REINFORCEAgent(env)
 
-num_episodes = 1000
+num_episodes = 5000
 
 # Lists to store rewards, episode lengths, and other data
 rewards = []
